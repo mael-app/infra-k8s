@@ -3,17 +3,15 @@ kind: Application
 metadata:
   name: github-runners
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
   source:
-    repoURL: https://github.com/mael-app/infra-k8s.git
+    repoURL: 'https://github.com/mael-app/infra-k8s.git'
     targetRevision: main
     path: manifests/github-runner
   destination:
     server: https://kubernetes.default.svc
-    namespace: actions-runner-system
+    namespace: actions-runner-controller-system
   syncPolicy:
     automated:
       prune: true

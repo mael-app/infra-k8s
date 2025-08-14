@@ -1,8 +1,8 @@
-apiVersion: actions.summerwind.dev/v1alpha1
+apiVersion: actions.github.com/v1alpha1
 kind: RunnerDeployment
 metadata:
   name: github-runner
-  namespace: actions-runner-system
+  namespace: actions-runner-controller-system
 spec:
   replicas: 3
   template:
@@ -11,6 +11,4 @@ spec:
       labels:
         - self-hosted
         - k8s
-      image: summerwind/actions-runner:latest
-      imagePullSecrets:
-        - name: ghcr-secret
+      image: ghcr.io/actions/actions-runner:latest
