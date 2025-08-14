@@ -6,21 +6,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://actions-runner-controller.github.io/actions-runner-controller'
-    chart: actions-runner-controller
-    targetRevision: 0.23.7
-    helm:
-      values: |
-        authSecret:
-          create: false
-          name: "gh-secret"
-          key: "token"
-        image:
-          repository: ghcr.io/actions/actions-runner-controller
-          tag: latest
+    repoURL: 'oci://ghcr.io/actions/actions-runner-controller-charts'
+    chart: gha-runner-scale-set-controller
+    targetRevision: 0.9.3
   destination:
     server: https://kubernetes.default.svc
-    namespace: actions-runner-controller-system
+    namespace: arc-systems
   syncPolicy:
     automated:
       prune: true
