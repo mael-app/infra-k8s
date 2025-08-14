@@ -8,10 +8,10 @@ spec:
   source:
     repoURL: 'https://danmanners.github.io/gha-scale-set-helm'
     chart: gha-runner-scale-set
-    targetRevision: 0.9.3
+    targetRevision: 0.9.0
     helm:
       values: |
-        githubConfigUrl: "https://github.com/HSMM-Epitech/zappy"
+        githubConfigUrl: "https://github.com/mael-app/tekboard"
         githubConfigSecret: "gh-secret"
         minRunners: 1
         maxRunners: 3
@@ -19,6 +19,9 @@ spec:
         runnerLabels:
           - "self-hosted"
           - "k8s"
+        controllerServiceAccount:
+           name: arc-controller-gha-rs-controller
+           namespace: arc-systems
         template:
           spec:
             containers:

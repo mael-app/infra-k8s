@@ -8,10 +8,11 @@ spec:
   source:
     repoURL: 'https://danmanners.github.io/gha-scale-set-helm'
     chart: gha-runner-scale-set-controller
-    targetRevision: 0.9.3
+    targetRevision: 0.9.0
     helm:
       values: |
         crds:
+          install: true
           annotations: {}
   destination:
     server: https://kubernetes.default.svc
