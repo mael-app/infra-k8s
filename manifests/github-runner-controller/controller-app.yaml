@@ -6,9 +6,13 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'oci://ghcr.io/actions/actions-runner-controller-charts'
+    repoURL: 'https://danmanners.github.io/gha-scale-set-helm'
     chart: gha-runner-scale-set-controller
     targetRevision: 0.9.3
+    helm:
+      values: |
+        crds:
+          annotations: {}
   destination:
     server: https://kubernetes.default.svc
     namespace: arc-systems
@@ -18,3 +22,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - Replace=true
