@@ -1,0 +1,16 @@
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: github-runner
+  namespace: actions-runner-system
+spec:
+  replicas: 3
+  template:
+    spec:
+      repository: HSMM-Epitech/zappy
+      labels:
+        - self-hosted
+        - k8s
+      image: summerwind/actions-runner:latest
+      imagePullSecrets:
+        - name: ghcr-secret
