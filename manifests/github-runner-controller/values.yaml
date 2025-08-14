@@ -1,0 +1,15 @@
+namespace: actions-runner-system
+replicaCount: 1
+image:
+  repository: summerwind/actions-runner-controller
+  tag: latest
+  pullPolicy: IfNotPresent
+
+github:
+  tokenSecret: gh-secret
+  tokenSecretKey: token
+
+serviceAccount:
+  create: true
+rbac:
+  create: true

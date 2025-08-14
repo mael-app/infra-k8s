@@ -1,8 +1,0 @@
-serviceAccount:
-  create: true
-  name: actions-runner-controller
-replicaCount: 1
-webhook:
-  replicas: 1
-runner:
-  image: summerwind/actions-runner:latest
