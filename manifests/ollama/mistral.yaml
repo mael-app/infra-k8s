@@ -15,4 +15,4 @@ spec:
             - "-c"
             - >
               curl -v -X POST http://ollama:11434/api/pull
-              -d '{"name":"mistral"}'
+              -d '{"name":"mixtral:8x7b"}'
