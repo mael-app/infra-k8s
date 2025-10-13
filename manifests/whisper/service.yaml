@@ -7,7 +7,7 @@ spec:
     app: whisper
   ports:
     - protocol: TCP
-      port: 8000
-      targetPort: 8000
-      nodePort: 30081
+      port: 9000
+      targetPort: 9000
+      nodePort: 30090
   type: NodePort
