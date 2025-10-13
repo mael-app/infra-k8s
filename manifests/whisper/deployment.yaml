@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whisper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whisper
+  template:
+    metadata:
+      labels:
+        app: whisper
+    spec:
+      containers:
+      - name: whisper
+        image: ghcr.io/openai/whisper:latest
+        ports:
+        - containerPort: 8000
+        command: ["python3", "-m", "whisper.server"]
+        env:
+        - name: MODEL
+          value: "base"
+        resources:
+          requests:
+            cpu: "2000m"
+            memory: "8Gi"
+          limits:
+            cpu: "8000m"
+            memory: "24Gi"
