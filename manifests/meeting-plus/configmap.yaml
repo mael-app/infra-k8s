@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: meeting-plus-config
+  namespace: default
+data:
+  GUILD_ID: "1417065077005221960"
+  TEXT_LOG_CHANNEL_ID: "1427601209879040142"
+  SUMMARY_CHANNEL_ID: "1427629421820379196"
+  OUTPUT_DIR: "/app/output"
+  TRANSCRIPTS_DIR: "/app/transcripts"
+  TRANSCRIPTS_LANGUAGE: "fr"
+  TRANSCRIPTS_MODEL: "medium"

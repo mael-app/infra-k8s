@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meeting-plus
+  namespace: default
+  labels:
+    app: meeting-plus
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: meeting-plus
+  template:
+    metadata:
+      labels:
+        app: meeting-plus
+    spec:
+      containers:
+        - name: meeting-plus
+          image: ghcr.io/mael-app/meeting-plus:latest
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: meeting-plus-config
+            - secretRef:
+                name: meeting-plus-secrets
+          volumeMounts:
+            - name: output
+              mountPath: /app/output
+            - name: transcripts
+              mountPath: /app/transcripts
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "20Gi"
+              cpu: "3500m"
+          livenessProbe:
+            exec:
+              command:
+                - python
+                - -c
+                - "import discord; print(discord.__version__)"
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - python
+                - -c
+                - "import discord; print(discord.__version__)"
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+      volumes:
+        - name: output
+          persistentVolumeClaim:
+            claimName: meeting-plus-output
+        - name: transcripts
+          persistentVolumeClaim:
+            claimName: meeting-plus-transcripts
+      restartPolicy: Always
