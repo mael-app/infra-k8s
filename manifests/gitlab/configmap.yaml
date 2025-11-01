@@ -14,6 +14,6 @@ data:
     nginx['listen_https'] = true
     nginx['redirect_http_to_https'] = true
 
-    gitlab_rails['gitlab_ssh_host'] = 'gitlab.justmael.me'
+    gitlab_rails['gitlab_ssh_host'] = 'gitlab-ssh.justmael.me'
 
     gitlab_rails['time_zone'] = 'Europe/Paris'
