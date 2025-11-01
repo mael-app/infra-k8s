@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: gitlab
-        image: gitlab/gitlab-ce:18.3.1-ce.0
+        image: gitlab/gitlab-ce:18.3.1
         ports:
         - containerPort: 443
           name: https
@@ -30,7 +30,7 @@ spec:
               key: GITLAB_OMNIBUS_CONFIG
         volumeMounts:
         - name: gitlab-data
-          mountPath: /var/opt/gitlab
+          mountPath: /var/opt/gitlab/git-data
         - name: gitlab-config
           mountPath: /etc/gitlab
         - name: gitlab-logs
@@ -44,18 +44,20 @@ spec:
             cpu: "4"
         livenessProbe:
           httpGet:
-            path: /health
+            path: /-/liveness
             port: 80
           initialDelaySeconds: 300
           periodSeconds: 30
           timeoutSeconds: 5
+          failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /readiness
+            path: /-/readiness
             port: 80
           initialDelaySeconds: 180
           periodSeconds: 10
           timeoutSeconds: 5
+          failureThreshold: 3
       volumes:
       - name: gitlab-data
         persistentVolumeClaim:
