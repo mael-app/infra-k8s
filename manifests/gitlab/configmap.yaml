@@ -14,7 +14,7 @@ data:
     nginx['listen_port'] = 80
     nginx['listen_https'] = false
 
-    ginx['proxy_set_headers'] = {
+    nginx['proxy_set_headers'] = {
       'X-Forwarded-Proto' => 'https',
       'X-Forwarded-Ssl' => 'on'
     }
