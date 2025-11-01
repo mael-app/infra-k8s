@@ -43,26 +43,22 @@ spec:
             memory: "8Gi"
             cpu: "4"
         livenessProbe:
-          httpGet:
-            path: /-/liveness
-            port: 80
-            scheme: HTTP
-            httpHeaders:
-            - name: Host
-              value: localhost
-          initialDelaySeconds: 600
+          exec:
+            command:
+            - /bin/bash
+            - -lc
+            - "curl -sSfI --connect-timeout 2 --max-time 5 http://localhost/-/liveness > /dev/null"
+          initialDelaySeconds: 300
           periodSeconds: 30
           timeoutSeconds: 10
           failureThreshold: 5
         readinessProbe:
-          httpGet:
-            path: /-/readiness
-            port: 80
-            scheme: HTTP
-            httpHeaders:
-            - name: Host
-              value: localhost
-          initialDelaySeconds: 300
+          exec:
+            command:
+            - /bin/bash
+            - -lc
+            - "curl -sSfI --connect-timeout 2 --max-time 5 http://localhost/-/readiness > /dev/null"
+          initialDelaySeconds: 120
           periodSeconds: 15
           timeoutSeconds: 10
           failureThreshold: 10
