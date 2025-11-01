@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab
+  template:
+    metadata:
+      labels:
+        app: gitlab
+    spec:
+      containers:
+      - name: gitlab
+        image: gitlab/gitlab-ce:18.3.1
+        ports:
+        - containerPort: 443
+          name: https
+        - containerPort: 80
+          name: http
+        - containerPort: 22
+          name: ssh
+        env:
+        - name: GITLAB_OMNIBUS_CONFIG
+          valueFrom:
+            configMapKeyRef:
+              name: gitlab-config
+              key: GITLAB_OMNIBUS_CONFIG
+        volumeMounts:
+        - name: gitlab-data
+          mountPath: /var/opt/gitlab
+        - name: gitlab-config
+          mountPath: /etc/gitlab
+        - name: gitlab-logs
+          mountPath: /var/log/gitlab
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2"
+          limits:
+            memory: "8Gi"
+            cpu: "4"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 300
+          periodSeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 80
+          initialDelaySeconds: 180
+          periodSeconds: 10
+          timeoutSeconds: 5
+      volumes:
+      - name: gitlab-data
+        persistentVolumeClaim:
+          claimName: gitlab-data
+      - name: gitlab-config
+        persistentVolumeClaim:
+          claimName: gitlab-config
+      - name: gitlab-logs
+        persistentVolumeClaim:
+          claimName: gitlab-logs
