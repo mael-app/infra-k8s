@@ -23,6 +23,11 @@ spec:
         - containerPort: 22
           name: ssh
         env:
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: gitlab-smtp
+              key: smtp-password
         - name: GITLAB_OMNIBUS_CONFIG
           valueFrom:
             configMapKeyRef:
