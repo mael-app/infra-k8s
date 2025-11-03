@@ -20,3 +20,18 @@ data:
     }
 
     gitlab_rails['time_zone'] = 'Europe/Paris'
+
+    # SMTP Configuration
+    gitlab_rails['smtp_enable'] = true
+    gitlab_rails['smtp_address'] = "mail.smtp2go.com"
+    gitlab_rails['smtp_port'] = 2525
+    gitlab_rails['smtp_user_name'] = "dev-area"
+    gitlab_rails['smtp_password'] = "o3uvkxKgMR7CMUxO"
+    gitlab_rails['smtp_domain'] = "justmael.me"
+    gitlab_rails['smtp_authentication'] = "login"
+    gitlab_rails['smtp_enable_starttls_auto'] = true
+    gitlab_rails['smtp_tls'] = false
+
+    # Email settings
+    gitlab_rails['gitlab_email_from'] = 'gitlab@justmael.me'
+    gitlab_rails['gitlab_email_reply_to'] = 'gitlab@justmael.me'
