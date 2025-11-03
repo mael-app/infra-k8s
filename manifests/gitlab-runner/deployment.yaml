@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab-runner
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab-runner
+  template:
+    metadata:
+      labels:
+        app: gitlab-runner
+    spec:
+      serviceAccountName: gitlab-runner
+      containers:
+        - name: gitlab-runner
+          image: gitlab/gitlab-runner:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              # Créer le fichier de config avec le token
+              cp /scripts/config.template.toml /etc/gitlab-runner/config.toml
+              sed -i "s/__RUNNER_TOKEN__/$RUNNER_TOKEN/g" /etc/gitlab-runner/config.toml
+
+              # Démarrer le runner
+              gitlab-runner run --user=gitlab-runner --working-directory=/home/gitlab-runner
+          env:
+            - name: RUNNER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: gitlab-runner-secret
+                  key: runner-token
+          volumeMounts:
+            - name: config
+              mountPath: /scripts
+            - name: runner-config
+              mountPath: /etc/gitlab-runner
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            exec:
+              command:
+                - /usr/bin/pgrep
+                - gitlab-runner
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - /usr/bin/pgrep
+                - gitlab-runner
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: gitlab-runner-config
+        - name: runner-config
+          emptyDir: {}
