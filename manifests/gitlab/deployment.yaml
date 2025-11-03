@@ -31,8 +31,6 @@ spec:
         volumeMounts:
         - name: gitlab-data
           mountPath: /var/opt/gitlab
-        - name: gitlab-config
-          mountPath: /etc/gitlab
         - name: gitlab-logs
           mountPath: /var/log/gitlab
         resources:
@@ -66,9 +64,6 @@ spec:
       - name: gitlab-data
         persistentVolumeClaim:
           claimName: gitlab-data
-      - name: gitlab-config
-        persistentVolumeClaim:
-          claimName: gitlab-config
       - name: gitlab-logs
         persistentVolumeClaim:
           claimName: gitlab-logs
