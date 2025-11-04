@@ -38,12 +38,14 @@ spec:
           mountPath: /var/opt/gitlab
         - name: gitlab-logs
           mountPath: /var/log/gitlab
+        - name: gitlab-config
+          mountPath: /etc/gitlab
         resources:
           requests:
-            memory: "4Gi"
+            memory: "6Gi"
             cpu: "500m"
           limits:
-            memory: "8Gi"
+            memory: "12Gi"
             cpu: "2"
         livenessProbe:
           exec:
@@ -51,20 +53,20 @@ spec:
             - /bin/bash
             - -lc
             - "curl -sSfI --connect-timeout 2 --max-time 5 http://localhost/-/liveness > /dev/null"
-          initialDelaySeconds: 300
-          periodSeconds: 30
+          initialDelaySeconds: 600
+          periodSeconds: 60
           timeoutSeconds: 10
-          failureThreshold: 5
+          failureThreshold: 10
         readinessProbe:
           exec:
             command:
             - /bin/bash
             - -lc
             - "curl -sSfI --connect-timeout 2 --max-time 5 http://localhost/-/readiness > /dev/null"
-          initialDelaySeconds: 120
-          periodSeconds: 15
+          initialDelaySeconds: 300
+          periodSeconds: 30
           timeoutSeconds: 10
-          failureThreshold: 10
+          failureThreshold: 15
       volumes:
       - name: gitlab-data
         persistentVolumeClaim:
@@ -72,3 +74,6 @@ spec:
       - name: gitlab-logs
         persistentVolumeClaim:
           claimName: gitlab-logs
+      - name: gitlab-config
+        persistentVolumeClaim:
+          claimName: gitlab-config
