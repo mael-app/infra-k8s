@@ -5,22 +5,22 @@ metadata:
 data:
   GITLAB_OMNIBUS_CONFIG: |
     external_url 'https://gitlab.justmael.me'
-    
+
     gitlab_rails['gitlab_shell_ssh_port'] = 2222
     gitlab_rails['gitlab_ssh_host'] = 'gitlab-ssh.justmael.me'
-    
+
     letsencrypt['enable'] = false
-    
+
     nginx['listen_port'] = 80
     nginx['listen_https'] = false
-    
+
     nginx['proxy_set_headers'] = {
       'X-Forwarded-Proto' => 'https',
       'X-Forwarded-Ssl' => 'on'
     }
-    
+
     gitlab_rails['time_zone'] = 'Europe/Paris'
-    
+
     # SMTP Configuration
     gitlab_rails['smtp_enable'] = true
     gitlab_rails['smtp_address'] = "mail.smtp2go.com"
@@ -31,25 +31,23 @@ data:
     gitlab_rails['smtp_authentication'] = "login"
     gitlab_rails['smtp_enable_starttls_auto'] = true
     gitlab_rails['smtp_tls'] = false
-    
+
     # Email settings
     gitlab_rails['gitlab_email_from'] = 'gitlab@justmael.me'
     gitlab_rails['gitlab_email_reply_to'] = 'gitlab@justmael.me'
-    
+
     # Performance - Désactiver les features non essentielles
     prometheus_monitoring['enable'] = false
-    grafana['enable'] = false
-    alertmanager['enable'] = false
-    
+
     # Optimiser les workers
     puma['worker_processes'] = 2
     sidekiq['max_concurrency'] = 10
-    
+
     # Optimiser PostgreSQL
     postgresql['shared_buffers'] = "256MB"
     postgresql['max_connections'] = 200
     postgresql['work_mem'] = "8MB"
-    
+
     # Gitaly optimization
     gitaly['configuration'] = {
       concurrency: [
@@ -63,20 +61,17 @@ data:
         }
       ]
     }
-    
+
     # Backups automatiques
     gitlab_rails['backup_keep_time'] = 604800
     gitlab_rails['backup_path'] = "/var/opt/gitlab/backups"
-    gitlab_rails['backup_cron_enable'] = true
-    gitlab_rails['backup_cron_minute'] = 0
-    gitlab_rails['backup_cron_hour'] = 2
-    
+
     # Sécurité
     gitlab_rails['rate_limit_requests_per_period'] = 10
     gitlab_rails['rate_limit_period'] = 60
     gitlab_rails['session_expire_delay'] = 10080
     gitlab_rails['gitlab_signup_enabled'] = false
-    
-    # Git LFS 
+
+    # Git LFS
     gitlab_rails['lfs_enabled'] = true
     gitlab_rails['lfs_storage_path'] = "/var/opt/gitlab/gitlab-rails/shared/lfs-objects"
