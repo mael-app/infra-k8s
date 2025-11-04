@@ -5,22 +5,22 @@ metadata:
 data:
   GITLAB_OMNIBUS_CONFIG: |
     external_url 'https://gitlab.justmael.me'
-
+    
     gitlab_rails['gitlab_shell_ssh_port'] = 2222
     gitlab_rails['gitlab_ssh_host'] = 'gitlab-ssh.justmael.me'
-
+    
     letsencrypt['enable'] = false
-
+    
     nginx['listen_port'] = 80
     nginx['listen_https'] = false
-
+    
     nginx['proxy_set_headers'] = {
       'X-Forwarded-Proto' => 'https',
       'X-Forwarded-Ssl' => 'on'
     }
-
+    
     gitlab_rails['time_zone'] = 'Europe/Paris'
-
+    
     # SMTP Configuration
     gitlab_rails['smtp_enable'] = true
     gitlab_rails['smtp_address'] = "mail.smtp2go.com"
@@ -31,35 +31,52 @@ data:
     gitlab_rails['smtp_authentication'] = "login"
     gitlab_rails['smtp_enable_starttls_auto'] = true
     gitlab_rails['smtp_tls'] = false
-
+    
     # Email settings
     gitlab_rails['gitlab_email_from'] = 'gitlab@justmael.me'
     gitlab_rails['gitlab_email_reply_to'] = 'gitlab@justmael.me'
-
-    # SSO SAML Configuration
-    gitlab_rails['omniauth_enabled'] = true
-    gitlab_rails['omniauth_allow_single_sign_on'] = ['saml']
-    gitlab_rails['omniauth_sync_email_from_provider'] = 'saml'
-    gitlab_rails['omniauth_sync_profile_from_provider'] = ['saml']
-    gitlab_rails['omniauth_sync_profile_attributes'] = ['email']
-    gitlab_rails['omniauth_auto_sign_in_with_provider'] = 'saml'
-    gitlab_rails['omniauth_block_auto_created_users'] = false
-    gitlab_rails['omniauth_auto_link_saml_user'] = true
-    gitlab_rails['omniauth_providers'] = [
-      {
-        name: 'saml',
-        args: {
-          assertion_consumer_service_url: 'https://gitlab.justmael.me/users/auth/saml/callback',
-          idp_cert_fingerprint: '66:ce:49:30:77:10:43:bf:d5:23:d2:68:9a:1b:ff:8b:71:e9:4a:35',
-          idp_sso_target_url: 'https://sso.logi-it.com/application/saml/Gitlab/sso/binding/redirect/',
-          issuer: 'https://gitlab.justmael.me',
-          name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
-          attribute_statements: {
-            email: ['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'],
-            first_name: ['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
-            nickname: ['http://schemas.goauthentik.io/2021/02/saml/username']
-          }
+    
+    # Performance - Désactiver les features non essentielles
+    prometheus_monitoring['enable'] = false
+    grafana['enable'] = false
+    alertmanager['enable'] = false
+    
+    # Optimiser les workers
+    puma['worker_processes'] = 2
+    sidekiq['max_concurrency'] = 10
+    
+    # Optimiser PostgreSQL
+    postgresql['shared_buffers'] = "256MB"
+    postgresql['max_connections'] = 200
+    postgresql['work_mem'] = "8MB"
+    
+    # Gitaly optimization
+    gitaly['configuration'] = {
+      concurrency: [
+        {
+          'rpc' => "/gitaly.SmartHTTPService/PostReceivePack",
+          'max_per_repo' => 3
         },
-        label: 'authentik'
-      }
-    ]
+        {
+          'rpc' => "/gitaly.SSHService/SSHUploadPack",
+          'max_per_repo' => 3
+        }
+      ]
+    }
+    
+    # Backups automatiques
+    gitlab_rails['backup_keep_time'] = 604800
+    gitlab_rails['backup_path'] = "/var/opt/gitlab/backups"
+    gitlab_rails['backup_cron_enable'] = true
+    gitlab_rails['backup_cron_minute'] = 0
+    gitlab_rails['backup_cron_hour'] = 2
+    
+    # Sécurité
+    gitlab_rails['rate_limit_requests_per_period'] = 10
+    gitlab_rails['rate_limit_period'] = 60
+    gitlab_rails['session_expire_delay'] = 10080
+    gitlab_rails['gitlab_signup_enabled'] = false
+    
+    # Git LFS 
+    gitlab_rails['lfs_enabled'] = true
+    gitlab_rails['lfs_storage_path'] = "/var/opt/gitlab/gitlab-rails/shared/lfs-objects"
