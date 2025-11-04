@@ -19,6 +19,21 @@ data:
       'X-Forwarded-Ssl' => 'on'
     }
 
+    # Container Registry (exposé via Cloudflare sur registry.justmael.me)
+    # TLS est terminé côté Cloudflare: on écoute en HTTP côté origin
+    registry_external_url 'https://registry.justmael.me'
+    registry['enable'] = true
+    # Active le vhost NGINX pour le registry mais sans TLS local
+    registry_nginx['enable'] = true
+    registry_nginx['listen_port'] = 80
+    registry_nginx['listen_https'] = false
+    # Propage les en-têtes pour que Rails sache que l'origine est HTTPS
+    # (utile pour générer des URLs correctes)
+    registry_nginx['proxy_set_headers'] = {
+      'X-Forwarded-Proto' => 'https',
+      'X-Forwarded-Ssl' => 'on'
+    }
+
     gitlab_rails['time_zone'] = 'Europe/Paris'
 
     # SMTP Configuration
