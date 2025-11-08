@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: samba
-        image: dperson/samba:latest
+        image: servercontainers/samba:latest
         ports:
         - containerPort: 139
           name: netbios
@@ -23,9 +23,21 @@ spec:
         env:
         - name: TZ
           value: "Europe/Paris"
-        - name: USERID
-          value: "1000"
-        - name: GROUPID
+        - name: MODEL
+          value: "MacSamba"
+        - name: AVAHI_NAME
+          value: "Time Machine"
+        - name: SAMBA_CONF_WORKGROUP
+          value: "WORKGROUP"
+        - name: SAMBA_CONF_SERVER_STRING
+          value: "Time Machine Server"
+        - name: SAMBA_CONF_MAP_TO_GUEST
+          value: "Bad User"
+        - name: SAMBA_VOLUME_CONFIG_timemachine
+          value: "[timemachine]; path=/data/timemachine; valid users=$(SMB_USER); guest ok=no; read only=no; browseable=yes; writeable=yes; create mask=0600; directory mask=0700; vfs objects=fruit streams_xattr; fruit:time machine=yes; fruit:time machine max size=200G"
+        - name: ACCOUNT_timemachine
+          value: "$(SMB_USER):$(SMB_PASS)"
+        - name: UID_timemachine
           value: "1000"
         - name: SMB_USER
           valueFrom:
@@ -37,31 +49,9 @@ spec:
             secretKeyRef:
               name: smb-credentials
               key: password
-        command:
-        - /bin/bash
-        - -c
-        - |
-          # Créer l'utilisateur Samba
-          adduser -D -H -u ${USERID} -G users ${SMB_USER}
-          echo "${SMB_USER}:${SMB_PASS}" | chpasswd
-          echo -e "${SMB_PASS}\n${SMB_PASS}" | smbpasswd -a -s ${SMB_USER}
-          smbpasswd -e ${SMB_USER}
-          
-          # Créer le répertoire Time Machine
-          mkdir -p /data/timemachine
-          chown ${SMB_USER}:users /data/timemachine
-          chmod 0700 /data/timemachine
-          
-          # Copier la configuration
-          cp /config/smb.conf /etc/samba/smb.conf
-          
-          # Démarrer Samba
-          exec smbd -F -S --no-process-group
         volumeMounts:
         - name: smb-data
           mountPath: /data
-        - name: smb-config
-          mountPath: /config
         resources:
           requests:
             memory: "256Mi"
@@ -73,12 +63,9 @@ spec:
           privileged: true
           capabilities:
             add:
-            - NET_BIND_SERVICE
+            - NET_ADMIN
             - SYS_ADMIN
       volumes:
       - name: smb-data
         persistentVolumeClaim:
           claimName: smb-data
-      - name: smb-config
-        configMap:
-          name: smb-config
