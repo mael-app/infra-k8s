@@ -18,8 +18,10 @@ spec:
         ports:
         - containerPort: 139
           name: netbios
+          hostPort: 139
         - containerPort: 445
           name: smb
+          hostPort: 445
         env:
         - name: TZ
           value: "Europe/Paris"
@@ -35,10 +37,6 @@ spec:
           value: "Bad User"
         - name: SAMBA_VOLUME_CONFIG_timemachine
           value: "[timemachine]; path=/data/timemachine; valid users=$(SMB_USER); guest ok=no; read only=no; browseable=yes; writeable=yes; create mask=0600; directory mask=0700; vfs objects=fruit streams_xattr; fruit:time machine=yes; fruit:time machine max size=200G"
-        - name: ACCOUNT_timemachine
-          value: "$(SMB_USER):$(SMB_PASS)"
-        - name: UID_timemachine
-          value: "1000"
         - name: SMB_USER
           valueFrom:
             secretKeyRef:
@@ -49,6 +47,13 @@ spec:
             secretKeyRef:
               name: smb-credentials
               key: password
+        - name: ACCOUNT_timemachine
+          valueFrom:
+            secretKeyRef:
+              name: smb-credentials
+              key: account
+        - name: UID_timemachine
+          value: "1000"
         volumeMounts:
         - name: smb-data
           mountPath: /data
