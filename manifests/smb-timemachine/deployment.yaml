@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smb-timemachine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smb-timemachine
+  template:
+    metadata:
+      labels:
+        app: smb-timemachine
+    spec:
+      containers:
+      - name: samba
+        image: dperson/samba:latest
+        ports:
+        - containerPort: 139
+          name: netbios
+        - containerPort: 445
+          name: smb
+        env:
+        - name: TZ
+          value: "Europe/Paris"
+        - name: USERID
+          value: "1000"
+        - name: GROUPID
+          value: "1000"
+        - name: SMB_USER
+          valueFrom:
+            secretKeyRef:
+              name: smb-credentials
+              key: username
+        - name: SMB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: smb-credentials
+              key: password
+        command:
+        - /bin/bash
+        - -c
+        - |
+          # Créer l'utilisateur Samba
+          adduser -D -H -u ${USERID} -G users ${SMB_USER}
+          echo "${SMB_USER}:${SMB_PASS}" | chpasswd
+          echo -e "${SMB_PASS}\n${SMB_PASS}" | smbpasswd -a -s ${SMB_USER}
+          smbpasswd -e ${SMB_USER}
+          
+          # Créer le répertoire Time Machine
+          mkdir -p /data/timemachine
+          chown ${SMB_USER}:users /data/timemachine
+          chmod 0700 /data/timemachine
+          
+          # Copier la configuration
+          cp /config/smb.conf /etc/samba/smb.conf
+          
+          # Démarrer Samba
+          exec smbd -F -S --no-process-group
+        volumeMounts:
+        - name: smb-data
+          mountPath: /data
+        - name: smb-config
+          mountPath: /config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+        securityContext:
+          capabilities:
+            add:
+            - NET_BIND_SERVICE
+      volumes:
+      - name: smb-data
+        persistentVolumeClaim:
+          claimName: smb-data
+      - name: smb-config
+        configMap:
+          name: smb-config
