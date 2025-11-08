@@ -18,10 +18,8 @@ spec:
         ports:
         - containerPort: 139
           name: netbios
-          hostPort: 139
         - containerPort: 445
           name: smb
-          hostPort: 445
         env:
         - name: TZ
           value: "Europe/Paris"
